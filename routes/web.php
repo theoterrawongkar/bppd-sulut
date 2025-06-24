@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
+use App\Http\Controllers\Profile\ProfileController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/tentang', [AboutController::class, 'index'])->name('about');
@@ -30,6 +31,9 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::get('/profil-saya', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profil-saya', [ProfileController::class, 'update'])->name('profile.update');
 
     Route::post('/wisata/{slug}/review', [TourPlaceController::class, 'storeReview'])->name('tourplace.review.store');
     Route::post('/kuliner/{slug}/review', [CulinaryPlaceController::class, 'storeReview'])->name('culinaryplace.review.store');

@@ -157,7 +157,7 @@
             <label for="menu_path" class="block text-sm font-medium text-gray-700">Upload Menu (PDF/Gambar)</label>
             <input id="menu_path" type="file" name="menu_path"
                 class="w-full mt-1 text-sm border border-gray-300 rounded-md shadow-sm file:px-3 file:py-1 file:border-0 file:text-blue-800 file:bg-blue-200 hover:file:bg-blue-300">
-            <p class="mt-1 text-xs text-gray-500">Unggah maksimal 1 file. Format: PDF, JPG, PNG, JPEG. Size: 2MB</p>
+            <p class="mt-1 text-xs text-gray-500">Unggah maksimal 1 file. Format: PDF, JPG, PNG, JPEG. Maks: 2MB</p>
             @error('menu_path')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror
@@ -168,7 +168,7 @@
             <label for="images" class="block text-sm font-medium text-gray-700">Foto Tempat Usaha (Gambar)</label>
             <input type="file" id="images" name="images[]" multiple accept="image/*"
                 class="w-full mt-1 text-sm border border-gray-300 rounded-md shadow-sm file:px-3 file:py-1 file:border-0 file:text-green-800 file:bg-green-200 hover:file:bg-green-300">
-            <p class="mt-1 text-xs text-gray-500">Unggah maksimal 5 gambar. Format: JPG, PNG, JPEG. Size: 2MB</p>
+            <p class="mt-1 text-xs text-gray-500">Unggah maksimal 5 gambar. Format: JPG, PNG, JPEG. Maks: 2MB</p>
             @error('images')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror

@@ -155,7 +155,7 @@
             <label for="images" class="block text-sm font-medium text-gray-700">Foto Tempat Wisata (Gambar)</label>
             <input type="file" id="images" name="images[]" multiple accept="image/*"
                 class="w-full mt-1 text-sm border border-gray-300 rounded-md shadow-sm file:px-3 file:py-1 file:border-0 file:text-green-800 file:bg-green-200 hover:file:bg-green-300">
-            <p class="mt-1 text-xs text-gray-500">Unggah maksimal 5 gambar. Format: JPG, PNG, JPEG. Size: 2MB</p>
+            <p class="mt-1 text-xs text-gray-500">Unggah maksimal 5 gambar. Format: JPG, PNG, JPEG. Maks: 2MB</p>
             @error('images')
                 <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
             @enderror

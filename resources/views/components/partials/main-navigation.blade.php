@@ -57,14 +57,15 @@
                                 </div>
                                 <div>
                                     <div class="text-sm font-semibold text-gray-800 line-clamp-1">
-                                        {{ auth()->user()->name }}</div>
+                                        {{ Str::limit(auth()->user()->name, 15) }}</div>
                                     <div class="text-xs text-gray-500 capitalize line-clamp-1">{{ auth()->user()->role }}
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Menu -->
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            <a href="{{ route('profile.edit') }}"
+                                class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 Profil Saya
                             </a>
                             <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -146,7 +147,7 @@
                         <!-- Nama & Role -->
                         <div class="flex flex-col">
                             <div class="text-sm font-semibold text-[#486284]">
-                                {{ auth()->user()->name }}
+                                {{ Str::limit(auth()->user()->name, 15) }}
                             </div>
                             <div class="text-xs text-gray-500 capitalize">
                                 {{ auth()->user()->role }}

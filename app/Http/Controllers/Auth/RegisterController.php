@@ -37,6 +37,7 @@ class RegisterController extends Controller
                 'email' => 'required|email:dns|unique:users,email',
                 'password' => [
                     'required',
+                    'string',
                     'min:8',
                     'confirmed',
                     'regex:/^(?=.*[0-9])(?=.*[\W_]).+$/'
@@ -64,6 +65,7 @@ class RegisterController extends Controller
                 'email'             => 'required|email:dns|unique:users,email',
                 'password'          => [
                     'required',
+                    'string',
                     'min:8',
                     'confirmed',
                     'regex:/^(?=.*[0-9])(?=.*[\W_]).+$/'
@@ -156,6 +158,7 @@ class RegisterController extends Controller
                 'email'             => 'required|email:dns|unique:users,email',
                 'password'          => [
                     'required',
+                    'string',
                     'min:8',
                     'confirmed',
                     'regex:/^(?=.*[0-9])(?=.*[\W_]).+$/'
@@ -243,6 +246,7 @@ class RegisterController extends Controller
                 'email'             => 'required|email:dns|unique:users,email',
                 'password'          => [
                     'required',
+                    'string',
                     'min:8',
                     'confirmed',
                     'regex:/^(?=.*[0-9])(?=.*[\W_]).+$/'

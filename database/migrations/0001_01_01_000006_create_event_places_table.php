@@ -40,7 +40,7 @@ return new class extends Migration
 
         Schema::create('artist_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('stage_name');
             $table->string('owner_email');
             $table->string('phone');
@@ -55,9 +55,9 @@ return new class extends Migration
 
         Schema::create('event_participants', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->foreignId('event_place_id')->constrained()->onDelete('cascade');
-            $table->foreignId('artist_profile_id')->nullable()->constrained()->onDelete('set null');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('event_place_id')->constrained('event_places')->onDelete('cascade');
+            $table->foreignId('artist_profile_id')->nullable()->constrained('artist_profiles')->onDelete('set null');
             $table->enum('status', ['Menunggu Persetujuan', 'Ditolak', 'Diterima', 'Berhenti Permanen'])->default('Menunggu Persetujuan');
             $table->timestamps();
 
