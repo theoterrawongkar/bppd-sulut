@@ -114,8 +114,8 @@ class RegisterController extends Controller
                     'owner_name'      => $validated['owner_name'],
                     'owner_email'     => $validated['owner_email'],
                     'phone'           => $validated['phone'],
-                    'instagram_link'  => $validated['instagram_link'],
-                    'facebook_link'   => $validated['facebook_link'],
+                    'instagram_link'  => $validated['instagram_link'] ?? null,
+                    'facebook_link'   => $validated['facebook_link'] ?? null,
                     'address'         => $validated['address'],
                     'gmaps_link'      => $validated['gmaps_link'],
                     'description'     => $validated['description'],
@@ -217,12 +217,12 @@ class RegisterController extends Controller
                     'owner_name'      => $validated['owner_name'],
                     'owner_email'     => $validated['owner_email'],
                     'phone'           => $validated['phone'],
-                    'instagram_link'  => $validated['instagram_link'],
-                    'facebook_link'   => $validated['facebook_link'],
+                    'instagram_link'  => $validated['instagram_link'] ?? null,
+                    'facebook_link'   => $validated['facebook_link'] ?? null,
                     'address'         => $validated['address'],
                     'gmaps_link'      => $validated['gmaps_link'],
                     'description'     => $validated['description'],
-                    'ticket_price'    => $validated['ticket_price'],
+                    'ticket_price'    => $validated['ticket_price'] ?? null,
                     'facility'        => $validated['facility'],
                 ]);
 
@@ -313,12 +313,12 @@ class RegisterController extends Controller
                     'portfolio_path'  => $portfolioPath,
                     'field'           => $validated['field'],
                     'description'     => $validated['description'],
-                    'instagram_link'  => $validated['instagram_link'],
-                    'facebook_link'   => $validated['facebook_link'],
+                    'instagram_link'  => $validated['instagram_link'] ?? null,
+                    'facebook_link'   => $validated['facebook_link'] ?? null,
                 ]);
             });
 
-            return redirect()->route('login')->with('success', 'Akun dan Profil Seniman berhasil didaftarkan. Menunggu persetujuan admin.');
+            return redirect()->route('login')->with('success', 'Akun dan Profil Seniman berhasil didaftarkan, Menunggu persetujuan admin.');
         }
     }
 }

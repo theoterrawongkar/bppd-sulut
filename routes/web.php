@@ -9,6 +9,7 @@ use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
 use App\Http\Controllers\MyCulinaryPlaceController;
+use App\Http\Controllers\MyTourPlaceController;
 use App\Http\Controllers\Profile\ProfileController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -44,4 +45,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/kuliner-saya/tambah', [MyCulinaryPlaceController::class, 'store'])->name('myculinaryplace.store');
     Route::get('/kuliner-saya/{slug}/ubah', [MyCulinaryPlaceController::class, 'edit'])->name('myculinaryplace.edit');
     Route::put('/kuliner-saya/{slug}/ubah', [MyCulinaryPlaceController::class, 'update'])->name('myculinaryplace.update');
+
+    Route::get('/wisata-saya', [MyTourPlaceController::class, 'index'])->name('mytourplace.index');
+    Route::get('/wisata-saya/tambah', [MyTourPlaceController::class, 'create'])->name('mytourplace.create');
+    Route::post('/wisata-saya/tambah', [MyTourPlaceController::class, 'store'])->name('mytourplace.store');
+    Route::get('/wisata-saya/{slug}/ubah', [MyTourPlaceController::class, 'edit'])->name('mytourplace.edit');
+    Route::put('/wisata-saya/{slug}/ubah', [MyTourPlaceController::class, 'update'])->name('mytourplace.update');
 });

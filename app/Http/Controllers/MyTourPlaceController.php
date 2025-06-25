@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\Category;
+use App\Models\TourPlace;
 use Illuminate\Http\Request;
-use App\Models\CulinaryPlace;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class MyCulinaryPlaceController extends Controller
+class MyTourPlaceController extends Controller
 {
     public function index(Request $request)
     {
@@ -24,15 +23,15 @@ class MyCulinaryPlaceController extends Controller
         $search = $validated['search'] ?? null;
         $sub_category = $validated['sub_category'] ?? null;
 
-        // Ambil kategori utama "Kuliner"
-        $category = Category::where('slug', 'kuliner')->with('subCategories')->first();
+        // Ambil kategori utama "Wisata"
+        $category = Category::where('slug', 'wisata')->with('subCategories')->first();
         $subCategories = $category?->subCategories ?? collect();
 
         // Ambil user ID login
         $userId = Auth::id();
 
         // Query
-        $culinaryPlaces = CulinaryPlace::with(['subCategory', 'firstImage'])
+        $tourPlaces = TourPlace::with(['subCategory', 'firstImage'])
             ->where('user_id', $userId)
             ->when($search, function ($query, $search) {
                 $query->where(function ($q) use ($search) {
@@ -49,16 +48,16 @@ class MyCulinaryPlaceController extends Controller
             ->paginate(9)
             ->appends($request->query());
 
-        return view('myculinaryplaces.index', compact('culinaryPlaces', 'subCategories'));
+        return view('mytourplaces.index', compact('tourPlaces', 'subCategories'));
     }
 
     public function create()
     {
-        // Ambil kategori kuliner beserta sub kategorinya
-        $category = Category::with('subCategories')->where('slug', 'kuliner')->first();
-        $culinarySubCategories = $category?->subCategories ?? collect();
+        // Ambil kategori wisata beserta sub kategorinya
+        $category = Category::with('subCategories')->where('slug', 'wisata')->first();
+        $tourSubCategories = $category?->subCategories ?? collect();
 
-        return view('myculinaryplaces.create', compact('culinarySubCategories'));
+        return view('mytourplaces.create', compact('tourSubCategories'));
     }
 
     public function store(Request $request)
@@ -74,11 +73,10 @@ class MyCulinaryPlaceController extends Controller
             'address'           => 'required|string',
             'gmaps_link'        => 'required|url',
             'description'       => 'required|string',
-            'types_of_food'     => 'required|in:Halal,Non Halal',
-            'menu_path'         => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'ticket_price'      => 'nullable|numeric|min:0',
             'facility'          => 'required|array',
             'facility.*'        => 'string',
-            'images'            => 'required|array|min:1|max:5',
+            'images'            => 'required|array|min:3|max:5',
             'images.*'          => 'image|mimes:jpg,jpeg,png|max:2048',
             'open_time'         => 'required|array',
             'close_time'        => 'required|array',
@@ -86,14 +84,8 @@ class MyCulinaryPlaceController extends Controller
         ]);
 
         DB::transaction(function () use ($request, $validated) {
-            // Simpan file menu jika ada
-            if ($request->hasFile('menu_path')) {
-                $menuPath = $request->file('menu_path')->store('menus', 'public');
-                $validated['menu_path'] = $menuPath;
-            }
-
-            // Buat culinaryPlace
-            $culinaryPlace = CulinaryPlace::create([
+            // Buat tourPlace
+            $tourPlace = TourPlace::create([
                 'user_id'         => Auth::id(),
                 'sub_category_id' => $validated['sub_category_id'],
                 'business_name'   => $validated['business_name'],
@@ -105,21 +97,20 @@ class MyCulinaryPlaceController extends Controller
                 'address'         => $validated['address'],
                 'gmaps_link'      => $validated['gmaps_link'],
                 'description'     => $validated['description'],
-                'types_of_food'   => $validated['types_of_food'],
+                'ticket_price'   => $validated['ticket_price'] ?? null,
                 'facility'        => $validated['facility'],
-                'menu_path'       => $validated['menu_path'],
             ]);
 
-            // Simpan gambar usaha (jika ada)
+            // Simpan gambar
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('culinary_images', 'public');
-                    $culinaryPlace->images()->create(['image' => $path]);
+                    $path = $image->store('tour_images', 'public');
+                    $tourPlace->images()->create(['image' => $path]);
                 }
             }
 
             // Simpan jam operasional
-            $culinaryPlace->operatingHours()->delete();
+            $tourPlace->operatingHours()->delete();
 
             $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
@@ -137,7 +128,7 @@ class MyCulinaryPlaceController extends Controller
                 }
 
                 // Simpan data
-                $culinaryPlace->operatingHours()->create([
+                $tourPlace->operatingHours()->create([
                     'day'        => $day,
                     'open_time'  => $isClosed ? null : $openTime,
                     'close_time' => $isClosed ? null : $closeTime,
@@ -146,13 +137,13 @@ class MyCulinaryPlaceController extends Controller
             }
         });
 
-        return redirect()->route('myculinaryplace.index')->with('success', 'Usaha kuliner berhasil ditambahkan, menunggu persetujuan admin.');
+        return redirect()->route('mytourplace.index')->with('success', 'Usaha Wisata berhasil ditambahkan, menunggu persetujuan admin.');
     }
 
     public function edit(string $slug)
     {
-        // Ambil data Kuliner
-        $culinaryPlace = CulinaryPlace::with([
+        // Ambil data wisata
+        $tourPlace = TourPlace::with([
             'subCategory',
             'firstImage',
             'images',
@@ -160,30 +151,30 @@ class MyCulinaryPlaceController extends Controller
             'reviews.user'
         ])->where('slug', $slug)->firstOrFail();
 
-        $category = Category::with('subCategories')->where('slug', 'kuliner')->first();
-        $culinarySubCategories = $category?->subCategories ?? collect();
+        $category = Category::with('subCategories')->where('slug', 'wisata')->first();
+        $tourSubCategories = $category?->subCategories ?? collect();
 
-        $operatingHours = $culinaryPlace->operatingHours->keyBy('day');
+        $operatingHours = $tourPlace->operatingHours->keyBy('day');
 
 
-        return view('myculinaryplaces.edit', compact(
-            'culinaryPlace',
-            'culinarySubCategories',
+        return view('mytourplaces.edit', compact(
+            'tourPlace',
+            'tourSubCategories',
             'operatingHours',
         ));
     }
 
     public function update(Request $request, string $slug)
     {
-        $culinaryPlace = CulinaryPlace::where('slug', $slug)->firstOrFail();
+        $tourPlace = TourPlace::where('slug', $slug)->firstOrFail();
 
         if ($request->action === 'open') {
-            $culinaryPlace->update(['status' => 'Menunggu Persetujuan']);
+            $tourPlace->update(['status' => 'Menunggu Persetujuan']);
             return redirect()->back()->with('success', 'Usaha telah dibuka kembali, menunggu persetujuan admin.');
         }
 
         if ($request->action === 'close') {
-            $culinaryPlace->update(['status' => 'Tutup Permanen']);
+            $tourPlace->update(['status' => 'Tutup Permanen']);
             return redirect()->back()->with('success', 'Usaha telah ditutup permanen.');
         }
 
@@ -198,8 +189,7 @@ class MyCulinaryPlaceController extends Controller
             'address'           => 'required|string',
             'gmaps_link'        => 'required|url',
             'description'       => 'required|string',
-            'types_of_food'     => 'required|in:Halal,Non Halal',
-            'menu_path'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'ticket_price'      => 'nullable|numeric|min:0',
             'facility'          => 'required|array',
             'facility.*'        => 'string',
             'images'            => 'nullable|array|min:1|max:5',
@@ -209,11 +199,11 @@ class MyCulinaryPlaceController extends Controller
             'is_closed'         => 'nullable|array',
         ]);
 
-        DB::transaction(function () use ($request, $validated, $culinaryPlace) {
+        DB::transaction(function () use ($request, $validated, $tourPlace) {
 
             if ($request->hasFile('menu_path')) {
-                if ($culinaryPlace->menu_path) {
-                    Storage::disk('public')->delete($culinaryPlace->menu_path);
+                if ($tourPlace->menu_path) {
+                    Storage::disk('public')->delete($tourPlace->menu_path);
                 }
                 $menuPath = $request->file('menu_path')->store('menus', 'public');
                 $validated['menu_path'] = $menuPath; // <- tambahkan menu_path ke $validated
@@ -232,33 +222,28 @@ class MyCulinaryPlaceController extends Controller
                 'address'         => $validated['address'],
                 'gmaps_link'      => $validated['gmaps_link'],
                 'description'     => $validated['description'],
-                'types_of_food'   => $validated['types_of_food'],
+                'ticket_price'    => $validated['ticket_price'] ?? null,
                 'facility'        => $validated['facility'],
             ];
 
-            // hanya jika menu_path baru tersedia
-            if (isset($validated['menu_path'])) {
-                $updateData['menu_path'] = $validated['menu_path'];
-            }
-
-            $culinaryPlace->update($updateData);
+            $tourPlace->update($updateData);
 
             if ($request->hasFile('images')) {
-                foreach ($culinaryPlace->images as $img) {
+                foreach ($tourPlace->images as $img) {
                     Storage::disk('public')->delete($img->image);
                     $img->delete();
                 }
 
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('culinary_images', 'public');
-                    $culinaryPlace->images()->create([
+                    $path = $image->store('tour_images', 'public');
+                    $tourPlace->images()->create([
                         'image' => $path,
                     ]);
                 }
             }
 
             // Simpan jam operasional
-            $culinaryPlace->operatingHours()->delete();
+            $tourPlace->operatingHours()->delete();
 
             $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
 
@@ -276,7 +261,7 @@ class MyCulinaryPlaceController extends Controller
                 }
 
                 // Simpan data
-                $culinaryPlace->operatingHours()->create([
+                $tourPlace->operatingHours()->create([
                     'day'        => $day,
                     'open_time'  => $isClosed ? null : $openTime,
                     'close_time' => $isClosed ? null : $closeTime,
@@ -285,6 +270,6 @@ class MyCulinaryPlaceController extends Controller
             }
         });
 
-        return redirect()->back()->with('success', 'Usaha Kuliner berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Usaha Wisata berhasil diperbarui.');
     }
 }

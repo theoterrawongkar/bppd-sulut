@@ -78,7 +78,8 @@
                                     Usaha Saya
                                 </a>
                             @elseif (auth()->user()->role == 'Pengusaha Wisata')
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <a href="{{ route('mytourplace.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     Usaha Saya
                                 </a>
                             @elseif (auth()->user()->role == 'Seniman')
@@ -184,7 +185,8 @@
                             Usaha Saya
                         </a>
                     @elseif (auth()->user()->role == 'Pengusaha Wisata')
-                        <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                        <a href="{{ route('mytourplace.index') }}"
+                            class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
                             Usaha Saya
                         </a>
                     @elseif (auth()->user()->role == 'Seniman')
