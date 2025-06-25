@@ -60,10 +60,29 @@
                 {{-- Box Pendaftaran --}}
                 <div class="bg-white p-4 rounded-xl shadow-md text-center">
                     <p class="mb-3 text-sm">Daftarkan dirimu dan jadilah bagian dari event ini</p>
-                    <a href="#"
-                        class="inline-block bg-green-600 hover:bg-green-700 text-sm text-white font-semibold w-1/2 py-2 rounded-full transition">
-                        Daftar
-                    </a>
+                    @if ($alreadyRegistered)
+                        <div class="mt-4 mb-1">
+                            <form action="{{ route('myeventparticipation.destroy', $eventPlace->slug) }}" method="POST"
+                                onsubmit="return confirm('Yakin ingin membatalkan partisipasi?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                    class="w-1/2 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded-full">
+                                    Batal Partisipasi
+                                </button>
+                            </form>
+                        </div>
+                    @else
+                        {{-- Form daftar --}}
+                        <form action="{{ route('myeventparticipation.store') }}" method="POST">
+                            @csrf
+                            <input type="hidden" name="event_place_id" value="{{ $eventPlace->id }}">
+                            <button type="submit" onclick="return confirm('Ingin mengikuti kegiatan ini?');"
+                                class="w-1/2 bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded-full">
+                                Daftar
+                            </button>
+                        </form>
+                    @endif
                 </div>
 
                 {{-- Box Informasi --}}
