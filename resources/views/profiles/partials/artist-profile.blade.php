@@ -92,6 +92,10 @@
                         href="{{ asset('storage/' . $artistProfile->portfolio_path) }}" target="_blank"
                         class="underline text-blue-500">Lihat File</a></p>
             @endif
+
+            @error('portfolio_path')
+                <p class="text-sm text-red-600 mt-1">{{ $message }}</p>
+            @enderror
         </div>
     </div>
 </div>

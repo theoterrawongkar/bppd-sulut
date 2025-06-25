@@ -60,7 +60,7 @@
                                 </a>
                             @endif
                             <p class="flex items-center gap-2 text-[#486284]">
-                                <x-icons.location /> {{ $culinaryPlace->address }}
+                                <x-icons.location class="shrink-0" /> {{ $culinaryPlace->address }}
                             </p>
                         </div>
                         {{-- Detail & Facilities --}}

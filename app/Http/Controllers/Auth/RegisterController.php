@@ -10,7 +10,6 @@ use App\Models\ArtistProfile;
 use App\Models\CulinaryPlace;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class RegisterController extends Controller
@@ -136,14 +135,28 @@ class RegisterController extends Controller
                 }
 
                 // Simpan jam operasional
+                $culinaryPlace->operatingHours()->delete();
+
                 $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
                 foreach ($days as $day) {
+                    // Ambil nilai input dengan fallback null jika tidak ada
+                    $openTime = $request->open_time[$day] ?? null;
+                    $closeTime = $request->close_time[$day] ?? null;
+
+                    // Checkbox akan bernilai "1" jika dicentang
                     $isClosed = isset($request->is_closed[$day]) && $request->is_closed[$day] == 1;
 
+                    // Jika open & close time kosong, anggap tutup
+                    if (!$openTime && !$closeTime) {
+                        $isClosed = true;
+                    }
+
+                    // Simpan data
                     $culinaryPlace->operatingHours()->create([
                         'day'        => $day,
-                        'open_time'  => $isClosed ? null : $request->open_time[$day],
-                        'close_time' => $isClosed ? null : $request->close_time[$day],
+                        'open_time'  => $isClosed ? null : $openTime,
+                        'close_time' => $isClosed ? null : $closeTime,
                         'is_open'    => !$isClosed,
                     ]);
                 }
@@ -224,14 +237,28 @@ class RegisterController extends Controller
                 }
 
                 // Simpan jam operasional
+                $tourPlace->operatingHours()->delete();
+
                 $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
                 foreach ($days as $day) {
+                    // Ambil nilai input dengan fallback null jika tidak ada
+                    $openTime = $request->open_time[$day] ?? null;
+                    $closeTime = $request->close_time[$day] ?? null;
+
+                    // Checkbox akan bernilai "1" jika dicentang
                     $isClosed = isset($request->is_closed[$day]) && $request->is_closed[$day] == 1;
 
+                    // Jika open & close time kosong, anggap tutup
+                    if (!$openTime && !$closeTime) {
+                        $isClosed = true;
+                    }
+
+                    // Simpan data
                     $tourPlace->operatingHours()->create([
                         'day'        => $day,
-                        'open_time'  => $isClosed ? null : $request->open_time[$day],
-                        'close_time' => $isClosed ? null : $request->close_time[$day],
+                        'open_time'  => $isClosed ? null : $openTime,
+                        'close_time' => $isClosed ? null : $closeTime,
                         'is_open'    => !$isClosed,
                     ]);
                 }

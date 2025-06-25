@@ -68,9 +68,24 @@
                                 class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 Profil Saya
                             </a>
-                            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                Usaha Saya
-                            </a>
+                            @if (auth()->user()->role == 'Admin')
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Dashboard
+                                </a>
+                            @elseif (auth()->user()->role == 'Pengusaha Kuliner')
+                                <a href="{{ route('myculinaryplace.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Usaha Saya
+                                </a>
+                            @elseif (auth()->user()->role == 'Pengusaha Wisata')
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Usaha Saya
+                                </a>
+                            @elseif (auth()->user()->role == 'Seniman')
+                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Partisipasi Saya
+                                </a>
+                            @endif
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
                                 <button type="submit"
@@ -155,12 +170,29 @@
                         </div>
                     </div>
 
-                    <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                    <a href="{{ route('profile.edit') }}"
+                        class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
                         Profil Saya
                     </a>
-                    <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
-                        Usaha Saya
-                    </a>
+                    @if (auth()->user()->role == 'Admin')
+                        <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                            Dashboard
+                        </a>
+                    @elseif (auth()->user()->role == 'Pengusaha Kuliner')
+                        <a href="{{ route('myculinaryplace.index') }}"
+                            class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                            Usaha Saya
+                        </a>
+                    @elseif (auth()->user()->role == 'Pengusaha Wisata')
+                        <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                            Usaha Saya
+                        </a>
+                    @elseif (auth()->user()->role == 'Seniman')
+                        <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                            Partisipasi Saya
+                        </a>
+                    @endif
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit" class="w-full text-left py-1 text-red-600 hover:bg-red-100 rounded">
