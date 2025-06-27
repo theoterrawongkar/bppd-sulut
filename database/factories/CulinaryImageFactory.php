@@ -19,7 +19,7 @@ class CulinaryImageFactory extends Factory
     {
         return [
             'culinary_place_id' => CulinaryPlace::inRandomOrder()->first()->id,
-            'image' => 'sample.jpg',
+            'image' => 'sample/placeholder.webp',
         ];
     }
 }

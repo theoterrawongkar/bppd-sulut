@@ -43,6 +43,23 @@ class HomeController extends Controller
             ->paginate(8)
             ->appends($request->query());
 
-        return view('home', compact('eventPlaces'));
+        // Ambil event dengan status urutan dan map data untuk kalender
+        $calendarEvents = $eventPlaces->map(function ($event) use ($now) {
+            $statusColor = match (true) {
+                $event->start_time <= $now && $event->end_time >= $now => '#10b981',
+                $event->start_time > $now => '#3b82f6',
+                default => '#9ca3af',
+            };
+
+            return [
+                'title' => $event->business_name,
+                'start' => $event->start_time->toDateString(),
+                'end' => \Carbon\Carbon::parse($event->end_time)->addDay()->toDateString(),
+                'url' => route('eventplace.show', $event->slug),
+                'color' => $statusColor,
+            ];
+        });
+
+        return view('home', compact('eventPlaces', 'calendarEvents'));
     }
 }

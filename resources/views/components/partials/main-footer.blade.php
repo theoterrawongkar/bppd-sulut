@@ -65,7 +65,8 @@
 
         <!-- Copyright -->
         <div class="mt-10 border-t border-white/20 pt-5 text-center text-sm text-gray-200">
-            &copy; 2025 Badan Promosi Pariwisata Daerah Sulawesi Utara. Seluruh hak cipta dilindungi.
+            &copy; 2025 Nathasya Mongkau / 210211060242 - Universitas Sam Ratulangi, Manado. Seluruh hak cipta
+            dilindungi.
         </div>
     </div>
 </footer>

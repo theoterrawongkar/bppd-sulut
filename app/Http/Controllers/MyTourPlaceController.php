@@ -7,6 +7,7 @@ use App\Models\TourPlace;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class MyTourPlaceController extends Controller
@@ -142,7 +143,7 @@ class MyTourPlaceController extends Controller
 
     public function edit(string $slug)
     {
-        // Ambil data wisata
+        // Ambil data Wisata
         $tourPlace = TourPlace::with([
             'subCategory',
             'firstImage',
@@ -150,6 +151,9 @@ class MyTourPlaceController extends Controller
             'operatingHours',
             'reviews.user'
         ])->where('slug', $slug)->firstOrFail();
+
+        // Cek Akses
+        Gate::authorize('view', $tourPlace);
 
         $category = Category::with('subCategories')->where('slug', 'wisata')->first();
         $tourSubCategories = $category?->subCategories ?? collect();
@@ -166,7 +170,11 @@ class MyTourPlaceController extends Controller
 
     public function update(Request $request, string $slug)
     {
+        // Ambil data Wisata
         $tourPlace = TourPlace::where('slug', $slug)->firstOrFail();
+
+        // Cek Akses
+        Gate::authorize('update', $tourPlace);
 
         if ($request->action === 'open') {
             $tourPlace->update(['status' => 'Menunggu Persetujuan']);

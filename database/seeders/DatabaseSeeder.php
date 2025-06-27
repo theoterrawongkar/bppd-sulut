@@ -28,17 +28,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Buat 10 user, user pertama adalah admin
-        $users = User::factory(100)->make();
-        $users[0]->name = 'Admin BPPD';
-        $users[0]->email = 'admin@bppd.com';
-        $users[0]->role = 'Admin';
-        $users[0]->is_active = true;
-        $users->each->save();
+        // 1. Create users with roles
+        $admin = User::factory()->create([
+            'name' => 'Admin BPPD',
+            'email' => 'admin@bppd.com',
+            'role' => 'Admin',
+            'is_active' => true,
+        ]);
 
-        $userIds = User::pluck('id')->toArray();
+        $culinaryUsers = User::factory(10)->create(['role' => 'Pengusaha Kuliner']);
+        $tourismUsers = User::factory(10)->create(['role' => 'Pengusaha Wisata']);
+        $artistUsers = User::factory(10)->create(['role' => 'Seniman']);
+        $regularUsers = User::factory(69)->create(['role' => 'Pengguna']);
 
-        // 2. Buat kategori dan subkategori
+        $allUsers = collect([$admin])
+            ->merge($culinaryUsers)
+            ->merge($tourismUsers)
+            ->merge($artistUsers)
+            ->merge($regularUsers);
+
+        $userIds = $allUsers->pluck('id')->toArray();
+
+        // 2. Create categories and subcategories
         $categoryData = [
             'Kuliner' => ['Makanan Berat', 'Minuman', 'Camilan'],
             'Wisata' => ['Desa Pariwisata', 'Pulau', 'Pantai', 'Gunung', 'Taman'],
@@ -47,106 +58,106 @@ class DatabaseSeeder extends Seeder
 
         $subCategoriesMap = [];
 
-        foreach ($categoryData as $cat => $subs) {
+        foreach ($categoryData as $categoryName => $subNames) {
             $category = Category::factory()->create([
-                'name' => $cat,
-                'slug' => Str::slug($cat)
+                'name' => $categoryName,
+                'slug' => Str::slug($categoryName),
             ]);
 
-            foreach ($subs as $sub) {
-                $subCategoriesMap[$cat][] = SubCategory::factory()->create([
+            foreach ($subNames as $subName) {
+                $subCategoriesMap[$categoryName][] = SubCategory::factory()->create([
                     'category_id' => $category->id,
-                    'name' => $sub,
-                    'slug' => Str::slug($sub)
+                    'name' => $subName,
+                    'slug' => Str::slug($subName),
                 ]);
             }
         }
 
         $days = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
-        $usedUserIds = [];
 
-        // 3. CulinaryPlaces
-        $kulinerUsers = collect($userIds)->diff($usedUserIds)->shuffle()->take(10);
-        foreach ($kulinerUsers as $userId) {
-            $place = CulinaryPlace::factory()->create([
-                'user_id' => $userId,
-                'sub_category_id' => collect($subCategoriesMap['Kuliner'])->random()->id,
-            ]);
-            $usedUserIds[] = $userId;
-
-            CulinaryImage::factory(5)->create(['culinary_place_id' => $place->id]);
-
-            foreach ($days as $day) {
-                CulinaryOperatingHour::factory()->create([
-                    'culinary_place_id' => $place->id,
-                    'day' => $day,
-                    'is_open' => true
+        // 3. Create culinary places (for culinary users only)
+        foreach ($culinaryUsers as $user) {
+            $placeCount = rand(1, 3);
+            for ($i = 0; $i < $placeCount; $i++) {
+                $culinaryPlace = CulinaryPlace::factory()->create([
+                    'user_id' => $user->id,
+                    'sub_category_id' => collect($subCategoriesMap['Kuliner'])->random()->id,
                 ]);
+
+                CulinaryImage::factory(5)->create([
+                    'culinary_place_id' => $culinaryPlace->id,
+                ]);
+
+                foreach ($days as $day) {
+                    CulinaryOperatingHour::factory()->create([
+                        'culinary_place_id' => $culinaryPlace->id,
+                        'day' => $day,
+                        'is_open' => true,
+                    ]);
+                }
+
+                collect($userIds)->shuffle()->take(rand(1, 3))->each(function ($reviewerId) use ($culinaryPlace) {
+                    CulinaryReview::factory()->create([
+                        'user_id' => $reviewerId,
+                        'culinary_place_id' => $culinaryPlace->id,
+                    ]);
+                });
             }
-
-            collect($userIds)->shuffle()->take(rand(1, 3))->each(function ($reviewerId) use ($place) {
-                CulinaryReview::factory()->create([
-                    'user_id' => $reviewerId,
-                    'culinary_place_id' => $place->id,
-                ]);
-            });
         }
 
-        // 4. TourPlaces
-        $wisataUsers = collect($userIds)->diff($usedUserIds)->shuffle()->take(10);
-        foreach ($wisataUsers as $userId) {
-            $place = TourPlace::factory()->create([
-                'user_id' => $userId,
-                'sub_category_id' => collect($subCategoriesMap['Wisata'])->random()->id,
-            ]);
-            $usedUserIds[] = $userId;
-
-            TourImage::factory(5)->create(['tour_place_id' => $place->id]);
-
-            foreach ($days as $day) {
-                TourOperatingHour::factory()->create([
-                    'tour_place_id' => $place->id,
-                    'day' => $day,
-                    'is_open' => true
+        // 4. Create tour places (for tourism users only)
+        foreach ($tourismUsers as $user) {
+            $placeCount = rand(1, 3);
+            for ($i = 0; $i < $placeCount; $i++) {
+                $tourPlace = TourPlace::factory()->create([
+                    'user_id' => $user->id,
+                    'sub_category_id' => collect($subCategoriesMap['Wisata'])->random()->id,
                 ]);
+
+                TourImage::factory(5)->create([
+                    'tour_place_id' => $tourPlace->id,
+                ]);
+
+                foreach ($days as $day) {
+                    TourOperatingHour::factory()->create([
+                        'tour_place_id' => $tourPlace->id,
+                        'day' => $day,
+                        'is_open' => true,
+                    ]);
+                }
+
+                collect($userIds)->shuffle()->take(rand(1, 3))->each(function ($reviewerId) use ($tourPlace) {
+                    TourReview::factory()->create([
+                        'user_id' => $reviewerId,
+                        'tour_place_id' => $tourPlace->id,
+                    ]);
+                });
             }
-
-            collect($userIds)->shuffle()->take(rand(1, 3))->each(function ($reviewerId) use ($place) {
-                TourReview::factory()->create([
-                    'user_id' => $reviewerId,
-                    'tour_place_id' => $place->id,
-                ]);
-            });
         }
 
-        // 5. Seniman + ArtistProfile
-        $senimanUsers = collect($userIds)->diff($usedUserIds)->shuffle()->take(10);
-        foreach ($senimanUsers as $userId) {
-            $user = User::find($userId);
-            $user->update(['role' => 'Seniman']);
-            $usedUserIds[] = $userId;
-
-            ArtistProfile::factory()->create(['user_id' => $userId]);
+        // 5. Create artist profile (only 1 per artist user)
+        foreach ($artistUsers as $user) {
+            ArtistProfile::factory()->create([
+                'user_id' => $user->id,
+            ]);
         }
 
-        // 6. EventPlaces
-        $eventUsers = collect($userIds)->diff($usedUserIds)->shuffle()->take(10);
-        foreach ($eventUsers as $userId) {
-            $place = EventPlace::factory()->create([
-                'user_id' => $userId,
+        // 6. Create event places (only admin can create)
+        for ($i = 0; $i < 10; $i++) {
+            $eventPlace = EventPlace::factory()->create([
+                'user_id' => $admin->id,
                 'sub_category_id' => collect($subCategoriesMap['Event'])->random()->id,
             ]);
-            $usedUserIds[] = $userId;
 
-            EventImage::factory(5)->create(['event_place_id' => $place->id]);
+            EventImage::factory(5)->create([
+                'event_place_id' => $eventPlace->id,
+            ]);
 
-            // Tambahkan seniman acak sebagai peserta
-            $senimanList = User::where('role', 'Seniman')->get();
-            $senimanList->shuffle()->take(rand(1, 3))->each(function ($seniman) use ($place) {
+            $artistUsers->shuffle()->take(rand(1, 3))->each(function ($artistUser) use ($eventPlace) {
                 EventParticipant::factory()->create([
-                    'event_place_id' => $place->id,
-                    'user_id' => $seniman->id,
-                    'artist_profile_id' => $seniman->artistProfile->id ?? null,
+                    'event_place_id' => $eventPlace->id,
+                    'user_id' => $artistUser->id,
+                    'artist_profile_id' => $artistUser->artistProfile->id,
                 ]);
             });
         }

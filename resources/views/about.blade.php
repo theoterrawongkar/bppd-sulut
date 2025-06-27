@@ -2,7 +2,7 @@
 
     {{-- Bagian Header --}}
     <header class="relative">
-        <img src="{{ asset('img/about-banner.jpg') }}" alt="Header Image" class="w-full h-64 md:h-96 object-cover">
+        <img src="{{ asset('img/about-banner.webp') }}" alt="Header Image" class="w-full h-64 md:h-96 object-cover">
 
         <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center px-4">
             <h1 class="text-white text-2xl md:text-4xl font-bold">Tentang Kami</h1>

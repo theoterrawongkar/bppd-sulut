@@ -19,7 +19,7 @@ class EventImageFactory extends Factory
     {
         return [
             'event_place_id' => EventPlace::inRandomOrder()->first()->id,
-            'image' => 'sample.jpg',
+            'image' => 'sample/placeholder.webp',
         ];
     }
 }

@@ -51,7 +51,7 @@ class RegisterController extends Controller
                 'email' => $validated['email'],
                 'role' => $validated['role'],
                 'password' => Hash::make($validated['password']),
-                'is_active' => $validated['role'] === 'Pengguna' ? true : false,
+                'is_active' => true,
             ]);
 
             return redirect('/login')->with('success', 'Akun berhasil dibuat, login untuk melanjutkan.');

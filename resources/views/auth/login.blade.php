@@ -6,7 +6,7 @@
 
             {{-- Ilustrasi --}}
             <div class="md:w-1/2 h-48 md:h-auto bg-cover bg-center relative"
-                style="background-image: url('{{ asset('img/login-banner.jpg') }}')">
+                style="background-image: url('{{ asset('img/login-banner.webp') }}')">
                 <div class="absolute inset-0 bg-black/50"></div>
             </div>
 

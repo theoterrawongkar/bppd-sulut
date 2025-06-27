@@ -2,7 +2,7 @@
 
     {{-- Bagian Header --}}
     <header class="relative">
-        <img src="{{ asset('img/culinary-banner.jpg') }}" alt="Header Image" class="w-full h-64 md:h-96 object-cover">
+        <img src="{{ asset('img/culinary-banner.webp') }}" alt="Header Image" class="w-full h-64 md:h-96 object-cover">
         <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center px-4">
             <h1 class="text-white text-2xl md:text-4xl font-bold">Kuliner Sulawesi Utara</h1>
             <p class="text-white text-sm mt-2 max-w-2xl text-balance">Beragam kuliner yang memanjakan lidah dengan
@@ -20,7 +20,8 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari kuliner..."
                         autocomplete="off"
                         class="w-full border rounded-xl py-2 pl-5 pr-10 focus:outline-none focus:ring-2 focus:ring-[#3b5d85]">
-                    <x-icons.search class="absolute right-3 top-2.5 w-5 h-5 text-gray-500 hover:text-blue-500 cursor-pointer" />
+                    <x-icons.search
+                        class="absolute right-3 top-2.5 w-5 h-5 text-gray-500 hover:text-blue-500 cursor-pointer" />
                 </div>
             </div>
 

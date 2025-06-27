@@ -1,8 +1,115 @@
 <x-main-layout>
 
+    {{-- Script Tambahan --}}
+    <x-slot name="script">
+        <style>
+            /* Pastikan container bisa discroll horizontal di layar kecil */
+            #calendar {
+                overflow-x: auto;
+                width: 100%;
+            }
+
+            /* Skala font dan padding di layar kecil */
+            @media (max-width: 768px) {
+                .fc .fc-toolbar {
+                    flex-direction: column;
+                    gap: 0.5rem;
+                }
+
+                .fc-toolbar-title {
+                    font-size: 1rem;
+                    text-align: center;
+                }
+
+                .fc-button {
+                    font-size: 0.75rem;
+                    padding: 4px 6px !important;
+                }
+
+                .fc-col-header-cell-cushion,
+                .fc-daygrid-day-number {
+                    font-size: 0.75rem;
+                    padding: 4px !important;
+                }
+
+                .fc-daygrid-event {
+                    font-size: 0.7rem;
+                    padding: 1px 4px !important;
+                    line-height: 1rem;
+                }
+            }
+
+            .fc-button-primary {
+                background-color: #486284 !important;
+                border-color: #486284 !important;
+                color: white !important;
+            }
+
+            .fc-button-primary:hover {
+                background-color: #3b5d75 !important;
+                border-color: #3b5d75 !important;
+            }
+
+            .fc-toolbar-title {
+                font-weight: 600;
+                color: #374151;
+            }
+
+            .fc .fc-scrollgrid {
+                border-color: #e5e7eb;
+            }
+
+            .fc-day-today {
+                background-color: #fef3c7 !important;
+            }
+
+            .fc-daygrid-event {
+                background-color: #486284 !important;
+                color: white !important;
+                padding: 2px 6px;
+                border-radius: 8px;
+                font-weight: 500;
+            }
+        </style>
+
+        <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.17/index.global.min.js'></script>
+
+        <script>
+            let calendar; // buat variabel global
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const calendarEl = document.getElementById('calendar');
+
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'dayGridMonth',
+                    contentHeight: 'auto',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                    },
+                    events: @json($calendarEvents),
+                    eventClick: function(info) {
+                        if (info.event.url) {
+                            window.open(info.event.url, '_blank');
+                            info.jsEvent.preventDefault();
+                        }
+                    }
+                });
+            });
+
+            // Fungsi untuk render ulang saat tab aktif
+            function handleTabChange(tab) {
+                if (tab === 'calendar' && calendar) {
+                    setTimeout(() => calendar.render(), 10);
+                }
+            }
+        </script>
+    </x-slot>
+
     {{-- Bagian Header --}}
     <header class="relative">
-        <img src="{{ asset('img/home-banner.jpg') }}" alt="Header Image" class="w-full h-64 md:h-96 object-cover">
+        <img src="{{ asset('img/home-banner.webp') }}" alt="Header Image" class="w-full h-64 md:h-96 object-cover">
         <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-center px-4">
             <h1 class="text-white text-2xl md:text-4xl font-bold">Welcome to Sulawesi Utara</h1>
             <p class="text-white text-sm mt-2 max-w-2xl text-balance">
@@ -19,34 +126,31 @@
             @php
                 $recomendations = [
                     [
-                        'img' => 'https://cdn.pixabay.com/photo/2018/05/21/22/44/logo-3419889_960_720.png',
+                        'img' => asset('img/recomendations/mountains.svg'),
                         'label' => 'Pegunungan',
                         'slug' => 'gunung',
                         'url' => route('tourplace.index', ['sub_category' => 'gunung']),
                     ],
                     [
-                        'img' =>
-                            'https://png.pngtree.com/png-clipart/20230521/original/pngtree-beach-logo-design-vector-or-t-shirt-png-image_9166769.png',
+                        'img' => asset('img/recomendations/beach.svg'),
                         'label' => 'Pantai',
                         'slug' => 'pantai',
                         'url' => route('tourplace.index', ['sub_category' => 'pantai']),
                     ],
                     [
-                        'img' =>
-                            'https://png.pngtree.com/png-vector/20220718/ourmid/pngtree-culiner-logo-illustration-png-image_6005675.png',
+                        'img' => asset('img/recomendations/culinary.svg'),
                         'label' => 'Kuliner',
                         'slug' => null,
                         'url' => route('culinaryplace.index'),
                     ],
                     [
-                        'img' =>
-                            'https://png.pngtree.com/png-vector/20240529/ourmid/pngtree-an-icon-for-an-island-logo-vector-png-image_6967911.png',
+                        'img' => asset('img/recomendations/island.svg'),
                         'label' => 'Pulau',
                         'slug' => 'pulau',
                         'url' => route('tourplace.index', ['sub_category' => 'pulau']),
                     ],
                     [
-                        'img' => 'https://images.icon-icons.com/2642/PNG/512/google_map_location_logo_icon_159350.png',
+                        'img' => asset('img/recomendations/tour.svg'),
                         'label' => 'Wisata',
                         'slug' => null,
                         'url' => route('tourplace.index'),
@@ -64,7 +168,7 @@
     </section>
 
     {{-- Bagian Event --}}
-    <section class="container mx-auto py-10 px-4 sm:px-6 lg:px-8" x-data="{ tab: 'event' }">
+    <section class="container mx-auto py-10 px-4 sm:px-6 lg:px-8" x-data="{ tab: 'event' }" x-init="$watch('tab', value => handleTabChange(value))">
         {{-- Tabs --}}
         <div class="flex justify-center mb-10">
             <div class="bg-white shadow-md rounded-lg inline-flex text-sm overflow-hidden">
@@ -134,9 +238,8 @@
         </div>
 
         {{-- Kalender --}}
-        <div x-show="tab === 'calendar'" class="bg-white p-6 rounded-xl shadow-md">
-            <h3 class="text-xl font-semibold text-[#486284] mb-4">Kalender Event</h3>
-            <div id="calendar"></div>
+        <div id="calendar" x-show="tab === 'calendar'"
+            class="w-full min-h-[500px] md:min-h-[650px] bg-white border border-gray-200 rounded-xl shadow p-4 overflow-x-auto">
         </div>
 
         {{-- Pagination --}}

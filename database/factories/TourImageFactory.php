@@ -19,7 +19,7 @@ class TourImageFactory extends Factory
     {
         return [
             'tour_place_id' => TourPlace::inRandomOrder()->first()->id,
-            'image' => 'sample.jpg',
+            'image' => 'sample/placeholder.webp',
         ];
     }
 }

@@ -6,7 +6,7 @@
 
             {{-- Ilustrasi --}}
             <div class="md:w-1/2 h-48 md:h-auto bg-cover bg-center relative"
-                style="background-image: url('{{ asset('img/register-banner.jpg') }}')">
+                style="background-image: url('{{ asset('img/register-banner.webp') }}')">
                 <div class="absolute inset-0 bg-black/50"></div>
             </div>
 
@@ -38,21 +38,30 @@
                     </div>
 
                     {{-- Form Tambahan Berdasarkan Role --}}
-                    <div x-show="role === 'Pengusaha Kuliner'">
-                        @include('auth.partials.culinary-register', [
-                            'culinarySubCategories' => $culinarySubCategories,
-                        ])
-                    </div>
+                    <template x-if="role === 'Pengusaha Kuliner'">
+                        <div>
+                            @include('auth.partials.culinary-register', [
+                                'culinarySubCategories' => $culinarySubCategories,
+                            ])
+                        </div>
+                    </template>
 
-                    <div x-show="role === 'Pengusaha Wisata'">
-                        @include('auth.partials.tour-register', [
-                            'tourSubCategories' => $tourSubCategories,
-                        ])
-                    </div>
 
-                    <div x-show="role === 'Seniman'">
-                        @include('auth.partials.artist-register')
-                    </div>
+                    <template x-if="role === 'Pengusaha Wisata'">
+                        <div>
+                            @include('auth.partials.tour-register', [
+                                'tourSubCategories' => $tourSubCategories,
+                            ])
+                        </div>
+                    </template>
+
+                    <template x-if="role === 'Seniman'">
+                        <div>
+                            @include('auth.partials.artist-register', [
+                                'eventSubCategories' => $eventSubCategories,
+                            ])
+                        </div>
+                    </template>
 
                     {{-- Divider --}}
                     <div class="flex items-center gap-2 mt-6">

@@ -60,18 +60,38 @@
                 {{-- Box Pendaftaran --}}
                 <div class="bg-white p-4 rounded-xl shadow-md text-center">
                     <p class="mb-3 text-sm">Daftarkan dirimu dan jadilah bagian dari event ini</p>
-                    @if ($alreadyRegistered)
-                        <div class="mt-4 mb-1">
-                            <form action="{{ route('myeventparticipation.destroy', $eventPlace->slug) }}" method="POST"
-                                onsubmit="return confirm('Yakin ingin membatalkan partisipasi?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                    class="w-1/2 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded-full">
-                                    Batal Partisipasi
-                                </button>
-                            </form>
-                        </div>
+                    @auth
+                        @if (Auth::user()->role == 'Seniman')
+                            @if ($alreadyRegistered)
+                                {{-- Form batal --}}
+                                <form action="{{ route('myeventparticipation.destroy', $eventPlace->slug) }}" method="POST"
+                                    onsubmit="return confirm('Yakin ingin membatalkan partisipasi?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit"
+                                        class="w-1/2 bg-red-600 hover:bg-red-700 text-white px-2 py-1.5 rounded-full">
+                                        Batal Partisipasi
+                                    </button>
+                                </form>
+                            @else
+                                {{-- Form daftar --}}
+                                <form action="{{ route('myeventparticipation.store') }}" method="POST">
+                                    @csrf
+                                    <input type="hidden" name="event_place_id" value="{{ $eventPlace->id }}">
+                                    <button type="submit"
+                                        onclick="return confirm('Ingin berpartisipasi dalam kegiatan ini?');"
+                                        class="w-1/2 bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded-full">
+                                        Daftar
+                                    </button>
+                                </form>
+                            @endif
+                        @else
+                            <button type="submit"
+                                onclick="return alert('Akun Anda terdaftar sebagai {{ Auth::user()->role }} \nSilahkan buat akun Seniman, untuk berpartisipasi dalam event ini.');"
+                                class="w-1/2 bg-green-600 hover:bg-green-700 text-white px-2 py-1.5 rounded-full">
+                                Daftar
+                            </button>
+                        @endif
                     @else
                         {{-- Form daftar --}}
                         <form action="{{ route('myeventparticipation.store') }}" method="POST">
@@ -82,14 +102,14 @@
                                 Daftar
                             </button>
                         </form>
-                    @endif
+                    @endauth
                 </div>
 
                 {{-- Box Informasi --}}
                 <div class="bg-white p-4 rounded-xl shadow-md">
                     <h2 class="text-lg font-semibold mb-2 text-[#486284]">Informasi</h2>
                     <p class="text-sm mb-3">{{ $eventPlace->description }}</p>
-                    <div class="flex flex-col gap-3 text-sm text-gray-700">
+                    <div class="flex flex-col gap-3 text-sm text-gray-700 space-y-2">
 
                         @if ($eventPlace->instagram_link)
                             <a href="{{ $eventPlace->instagram_link }}"

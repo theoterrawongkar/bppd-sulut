@@ -6,10 +6,11 @@
         <div class="flex flex-row justify-between items-center gap-4 mb-4">
             <h2 class="text-lg font-semibold">Ulasan</h2>
             <div class="flex items-center gap-2 sm:gap-4">
-                <a href="#review-list" class="text-gray-900 text-sm font-semibold underline">
+                <a href="#review-list" class="text-gray-900 text-xs md:text-sm font-semibold underline">
                     Semua ulasan ({{ $totalReviews }})
                 </a>
-                <a href="#form-review" class="bg-black text-white text-sm px-4 py-2 rounded-full hover:bg-gray-800">
+                <a href="#form-review"
+                    class="bg-black text-white text-xs md:text-sm px-4 py-2 rounded-full hover:bg-gray-800">
                     Tulis Ulasan
                 </a>
             </div>

@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\EventParticipant;
 use Illuminate\Support\Facades\Auth;
 
-class MyEventParticipation extends Controller
+class MyEventParticipationController extends Controller
 {
     public function index(Request $request)
     {
@@ -79,22 +79,32 @@ class MyEventParticipation extends Controller
 
     public function destroy(string $slug)
     {
-        $userId = Auth::id();
+        // Ambil data user yang login
+        $user = Auth::user();
 
-        // Cari event berdasarkan slug
+        // Ambil event berdasarkan slug
         $eventPlace = EventPlace::where('slug', $slug)->firstOrFail();
 
-        // Cek apakah user memang ikut event ini
-        $participant = EventParticipant::where('user_id', $userId)
-            ->where('event_place_id', $eventPlace->id)
-            ->first();
+        // Ambil partisipasi berdasarkan user_id dan event_id
+        $participant = EventParticipant::where([
+            'user_id' => $user->id,
+            'event_place_id' => $eventPlace->id,
+        ])->first();
 
+        // Cegah jika user tidak memiliki data ini
         if (!$participant) {
-            return redirect()->route('myeventparticipation.index')->with('error', 'Anda belum terdaftar di event ini.');
+            return redirect()->route('myeventparticipation.index')
+                ->with('error', 'Anda tidak terdaftar pada event ini.');
+        }
+
+        // Cegah jika bukan pemilik (opsional karena sudah difilter di atas)
+        if ($participant->user_id !== $user->id) {
+            abort(403, 'Unauthorized');
         }
 
         $participant->delete();
 
-        return redirect()->route('myeventparticipation.index')->with('success', 'Partisipasi Anda berhasil dibatalkan.');
+        return redirect()->route('myeventparticipation.index')
+            ->with('success', 'Partisipasi Anda berhasil dibatalkan.');
     }
 }

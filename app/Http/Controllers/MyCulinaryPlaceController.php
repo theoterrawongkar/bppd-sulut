@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Carbon\Carbon;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\CulinaryPlace;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
 
 class MyCulinaryPlaceController extends Controller
@@ -78,7 +78,7 @@ class MyCulinaryPlaceController extends Controller
             'menu_path'         => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'facility'          => 'required|array',
             'facility.*'        => 'string',
-            'images'            => 'required|array|min:1|max:5',
+            'images'            => 'required|array|min:3|max:5',
             'images.*'          => 'image|mimes:jpg,jpeg,png|max:2048',
             'open_time'         => 'required|array',
             'close_time'        => 'required|array',
@@ -160,11 +160,13 @@ class MyCulinaryPlaceController extends Controller
             'reviews.user'
         ])->where('slug', $slug)->firstOrFail();
 
+        // Cek Akses
+        Gate::authorize('view', $culinaryPlace);
+
         $category = Category::with('subCategories')->where('slug', 'kuliner')->first();
         $culinarySubCategories = $category?->subCategories ?? collect();
 
         $operatingHours = $culinaryPlace->operatingHours->keyBy('day');
-
 
         return view('myculinaryplaces.edit', compact(
             'culinaryPlace',
@@ -176,6 +178,9 @@ class MyCulinaryPlaceController extends Controller
     public function update(Request $request, string $slug)
     {
         $culinaryPlace = CulinaryPlace::where('slug', $slug)->firstOrFail();
+
+        // Cek Akses
+        Gate::authorize('update', $culinaryPlace);
 
         if ($request->action === 'open') {
             $culinaryPlace->update(['status' => 'Menunggu Persetujuan']);
@@ -202,7 +207,7 @@ class MyCulinaryPlaceController extends Controller
             'menu_path'         => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
             'facility'          => 'required|array',
             'facility.*'        => 'string',
-            'images'            => 'nullable|array|min:1|max:5',
+            'images'            => 'nullable|array|min:3|max:5',
             'images.*'          => 'image|mimes:jpg,jpeg,png|max:2048',
             'open_time'         => 'required|array',
             'close_time'        => 'required|array',
