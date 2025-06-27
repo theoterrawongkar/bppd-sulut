@@ -9,7 +9,6 @@ use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
 use App\Http\Controllers\MyCulinaryPlaceController;
-use App\Http\Controllers\MyEventParticipation;
 use App\Http\Controllers\MyEventParticipationController;
 use App\Http\Controllers\MyTourPlaceController;
 use App\Http\Controllers\Profile\ProfileController;
