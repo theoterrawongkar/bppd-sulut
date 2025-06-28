@@ -69,7 +69,8 @@
                                 Profil Saya
                             </a>
                             @if (auth()->user()->role == 'Admin')
-                                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                <a href="{{ route('dashboard') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                     Dashboard
                                 </a>
                             @elseif (auth()->user()->role == 'Pengusaha Kuliner')
@@ -177,7 +178,8 @@
                         Profil Saya
                     </a>
                     @if (auth()->user()->role == 'Admin')
-                        <a href="#" class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
+                        <a href="{{ route('dashboard') }}"
+                            class="block py-1 text-gray-700 hover:text-[#10B981] hover:bg-gray-100 rounded">
                             Dashboard
                         </a>
                     @elseif (auth()->user()->role == 'Pengusaha Kuliner')

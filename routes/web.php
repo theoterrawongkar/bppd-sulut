@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
+use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\MyCulinaryPlaceController;
 use App\Http\Controllers\MyEventParticipationController;
 use App\Http\Controllers\MyTourPlaceController;
@@ -73,5 +74,10 @@ Route::middleware(['auth', 'active_user'])->group(function () {
         Route::post('/kuliner-saya/tambah', [MyCulinaryPlaceController::class, 'store'])->name('myculinaryplace.store');
         Route::get('/kuliner-saya/{slug}/ubah', [MyCulinaryPlaceController::class, 'edit'])->name('myculinaryplace.edit');
         Route::put('/kuliner-saya/{slug}/ubah', [MyCulinaryPlaceController::class, 'update'])->name('myculinaryplace.update');
+    });
+
+    // Hanya Admin
+    Route::middleware(['role:Admin'])->group(function () {
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     });
 });
