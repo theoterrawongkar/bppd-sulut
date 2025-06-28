@@ -9,6 +9,7 @@ use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\DashboardEventController;
 use App\Http\Controllers\MyCulinaryPlaceController;
 use App\Http\Controllers\MyEventParticipationController;
 use App\Http\Controllers\MyTourPlaceController;
@@ -79,5 +80,13 @@ Route::middleware(['auth', 'active_user'])->group(function () {
     // Hanya Admin
     Route::middleware(['role:Admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Manajemen Event
+        Route::get('/dashboard/event', [DashboardEventController::class, 'index'])->name('dashboard.eventplace.index');
+        Route::get('/dashboard/event/tambah', [DashboardEventController::class, 'create'])->name('dashboard.eventplace.create');
+        Route::post('/dashboard/event/tambah', [DashboardEventController::class, 'store'])->name('dashboard.eventplace.store');
+        Route::get('/dashboard/event/{slug}/ubah', [DashboardEventController::class, 'edit'])->name('dashboard.eventplace.edit');
+        Route::put('/dashboard/event/{slug}/ubah', [DashboardEventController::class, 'update'])->name('dashboard.eventplace.update');
+        Route::delete('/dashboard/event/{slug}/hapus', [DashboardEventController::class, 'destroy'])->name('dashboard.eventplace.destroy');
     });
 });

@@ -74,6 +74,11 @@ class EventPlace extends Model
         return $this->hasMany(EventParticipant::class);
     }
 
+    public function acceptedParticipants()
+    {
+        return $this->hasMany(EventParticipant::class)->where('status', 'Diterima');
+    }
+
     public function getStatusAttribute()
     {
         $now = Carbon::now();
