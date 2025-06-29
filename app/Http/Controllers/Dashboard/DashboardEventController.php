@@ -35,7 +35,7 @@ class DashboardEventController extends Controller
 
         $title = 'Event';
 
-        return view('dashboard.eventplace.index', compact('title', 'eventPlaces'));
+        return view('dashboard.eventplaces.index', compact('title', 'eventPlaces'));
     }
 
     public function create()
@@ -47,7 +47,7 @@ class DashboardEventController extends Controller
         // Judul Halaman
         $title = "Tambah Event";
 
-        return view('dashboard.eventplace.create', compact('title', 'subCategories'));
+        return view('dashboard.eventplaces.create', compact('title', 'subCategories'));
     }
 
     public function store(Request $request)
@@ -115,7 +115,7 @@ class DashboardEventController extends Controller
         // Judul Halaman
         $title = "Ubah Event";
 
-        return view('dashboard.eventplace.edit', compact('title', 'eventPlace', 'subCategories'));
+        return view('dashboard.eventplaces.edit', compact('title', 'eventPlace', 'subCategories'));
     }
 
     public function update(Request $request, string $slug)
@@ -194,6 +194,6 @@ class DashboardEventController extends Controller
         // Hapus Event
         $eventPlace->delete();
 
-        return redirect()->route('dashboard.eventplace.index')->with('success', 'Event berhasil dihapus.');
+        return redirect()->route('dashboard.eventplaces.index')->with('success', 'Event berhasil dihapus.');
     }
 }
