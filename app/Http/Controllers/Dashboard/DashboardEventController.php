@@ -138,7 +138,7 @@ class DashboardEventController extends Controller
             'ticket_price'      => 'nullable|numeric|min:0',
             'start_time'        => 'required|date',
             'end_time'          => 'required|date|after_or_equal:start_time',
-            'images'            => 'nullable|array|max:5',
+            'images'            => 'nullable|array|min:3|max:5',
             'images.*'          => 'image|mimes:jpg,jpeg,png|max:2048',
         ]);
 

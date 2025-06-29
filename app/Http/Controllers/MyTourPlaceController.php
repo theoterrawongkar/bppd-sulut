@@ -200,7 +200,7 @@ class MyTourPlaceController extends Controller
             'ticket_price'      => 'nullable|numeric|min:0',
             'facility'          => 'required|array',
             'facility.*'        => 'string',
-            'images'            => 'nullable|array|min:1|max:5',
+            'images'            => 'nullable|array|min:3|max:5',
             'images.*'          => 'image|mimes:jpg,jpeg,png|max:2048',
             'open_time'         => 'required|array',
             'close_time'        => 'required|array',

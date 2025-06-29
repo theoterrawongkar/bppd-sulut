@@ -9,7 +9,10 @@ use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\Dashboard\DashboardCulinaryController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
+use App\Http\Controllers\Dashboard\DashboardTourController;
+use App\Http\Controllers\Dashboard\DashboardUserController;
 use App\Http\Controllers\MyCulinaryPlaceController;
 use App\Http\Controllers\MyEventParticipationController;
 use App\Http\Controllers\MyTourPlaceController;
@@ -81,6 +84,9 @@ Route::middleware(['auth', 'active_user'])->group(function () {
     Route::middleware(['role:Admin'])->group(function () {
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+        // Status Akun
+        Route::put('/dashboard/user/{user}/toggle', [DashboardUserController::class, 'toggleStatus'])->name('dashboard.user.toggle');
+
         // Manajemen Event
         Route::get('/dashboard/event', [DashboardEventController::class, 'index'])->name('dashboard.eventplace.index');
         Route::get('/dashboard/event/tambah', [DashboardEventController::class, 'create'])->name('dashboard.eventplace.create');
@@ -88,5 +94,17 @@ Route::middleware(['auth', 'active_user'])->group(function () {
         Route::get('/dashboard/event/{slug}/ubah', [DashboardEventController::class, 'edit'])->name('dashboard.eventplace.edit');
         Route::put('/dashboard/event/{slug}/ubah', [DashboardEventController::class, 'update'])->name('dashboard.eventplace.update');
         Route::delete('/dashboard/event/{slug}/hapus', [DashboardEventController::class, 'destroy'])->name('dashboard.eventplace.destroy');
+
+        // Manajemen Wisata
+        Route::get('/dashboard/wisata', [DashboardTourController::class, 'index'])->name('dashboard.tourplace.index');
+        Route::get('/dashboard/wisata/{slug}/ubah', [DashboardTourController::class, 'edit'])->name('dashboard.tourplace.edit');
+        Route::put('/dashboard/wisata/{slug}/ubah', [DashboardTourController::class, 'update'])->name('dashboard.tourplace.update');
+        Route::delete('/dashboard/wisata/{slug}/hapus', [DashboardTourController::class, 'destroy'])->name('dashboard.tourplace.destroy');
+
+        // Manajemen Kuliner
+        Route::get('/dashboard/kuliner', [DashboardCulinaryController::class, 'index'])->name('dashboard.culinaryplace.index');
+        Route::get('/dashboard/kuliner/{slug}/ubah', [DashboardCulinaryController::class, 'edit'])->name('dashboard.culinaryplace.edit');
+        Route::put('/dashboard/kuliner/{slug}/ubah', [DashboardCulinaryController::class, 'update'])->name('dashboard.culinaryplace.update');
+        Route::delete('/dashboard/kuliner/{slug}/hapus', [DashboardCulinaryController::class, 'destroy'])->name('dashboard.culinaryplace.destroy');
     });
 });
