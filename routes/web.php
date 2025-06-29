@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\EventPlaceController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\CulinaryPlaceController;
+use App\Http\Controllers\Dashboard\DashboardArtistProfileController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\Dashboard\DashboardCulinaryController;
 use App\Http\Controllers\Dashboard\DashboardEventController;
@@ -87,6 +88,9 @@ Route::middleware(['auth', 'active_user'])->group(function () {
         // Status Akun
         Route::put('/dashboard/user/{user}/toggle', [DashboardUserController::class, 'toggleStatus'])->name('dashboard.user.toggle');
 
+        Route::patch('/dashboard/event/participant/{id}/update-status', [DashboardEventController::class, 'updateStatus'])
+            ->name('dashboard.eventparticipant.updateStatus');
+
         // Manajemen Event
         Route::get('/dashboard/event', [DashboardEventController::class, 'index'])->name('dashboard.eventplace.index');
         Route::get('/dashboard/event/tambah', [DashboardEventController::class, 'create'])->name('dashboard.eventplace.create');
@@ -106,5 +110,11 @@ Route::middleware(['auth', 'active_user'])->group(function () {
         Route::get('/dashboard/kuliner/{slug}/ubah', [DashboardCulinaryController::class, 'edit'])->name('dashboard.culinaryplace.edit');
         Route::put('/dashboard/kuliner/{slug}/ubah', [DashboardCulinaryController::class, 'update'])->name('dashboard.culinaryplace.update');
         Route::delete('/dashboard/kuliner/{slug}/hapus', [DashboardCulinaryController::class, 'destroy'])->name('dashboard.culinaryplace.destroy');
+
+        // Manajemen Seniman
+        Route::get('/dashboard/seniman', [DashboardArtistProfileController::class, 'index'])->name('dashboard.artistprofile.index');
+        Route::get('/dashboard/seniman/{id}/ubah', [DashboardArtistProfileController::class, 'edit'])->name('dashboard.artistprofile.edit');
+        Route::put('/dashboard/seniman/{id}/ubah', [DashboardArtistProfileController::class, 'update'])->name('dashboard.artistprofile.update');
+        Route::delete('/dashboard/seniman/{id}/hapus', [DashboardArtistProfileController::class, 'destroy'])->name('dashboard.artistprofile.destroy');
     });
 });

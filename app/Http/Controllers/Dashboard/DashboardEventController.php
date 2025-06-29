@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\EventImage;
 use App\Models\EventPlace;
 use Illuminate\Http\Request;
+use App\Models\EventParticipant;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -106,22 +107,26 @@ class DashboardEventController extends Controller
     public function edit(string $slug)
     {
         // Ambil data Event
-        $eventPlace = EventPlace::with('subCategory', 'images')->where('slug', $slug)->firstOrFail();
+        $eventPlace = EventPlace::with('user', 'subCategory', 'images',  'eventParticipants.artistProfile')->where('slug', $slug)->firstOrFail();
 
         // Ambil kategori utama "Event"
         $category = Category::where('slug', 'event')->with('subCategories')->first();
         $subCategories = $category?->subCategories ?? collect();
 
+        // Partisipan
+        $acceptedParticipants = $eventPlace->eventParticipants->filter(fn($p) => $p->status === 'Diterima');
+        $pendingOrRejectedParticipants = $eventPlace->eventParticipants->filter(fn($p) => in_array($p->status, ['Menunggu Persetujuan', 'Ditolak']));
+
         // Judul Halaman
         $title = "Ubah Event";
 
-        return view('dashboard.eventplaces.edit', compact('title', 'eventPlace', 'subCategories'));
+        return view('dashboard.eventplaces.edit', compact('title', 'eventPlace', 'subCategories', 'acceptedParticipants', 'pendingOrRejectedParticipants'));
     }
 
     public function update(Request $request, string $slug)
     {
         // Ambil data Event
-        $eventPlace = EventPlace::with('subCategory', 'images')->where('slug', $slug)->firstOrFail();
+        $eventPlace = EventPlace::where('slug', $slug)->firstOrFail();
 
         // Validasi input
         $validated = $request->validate([
@@ -178,6 +183,21 @@ class DashboardEventController extends Controller
 
         return redirect()->back()->with('success', 'Event berhasil diperbarui.');
     }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $participant = EventParticipant::findOrFail($id);
+
+        $request->validate([
+            'status' => 'required|in:Diterima,Ditolak',
+        ]);
+
+        $participant->status = $request->status;
+        $participant->save();
+
+        return back()->with('success', 'Status partisipan diperbarui.');
+    }
+
 
     public function destroy(string $slug)
     {

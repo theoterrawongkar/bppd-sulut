@@ -5,30 +5,172 @@
 
     {{-- Bagian Edit Event --}}
     <section>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {{-- Galeri --}}
-            <div class="" x-data="{
-                mainImage: '{{ $eventPlace->firstImage ? asset('storage/' . $eventPlace->firstImage->image) : asset('img/placeholder.webp') }}'
-            }">
+        <div class="grid grid-cols-1 md:grid-cols-2 items-start gap-6">
+            {{-- Kolom Kiri --}}
+            <div class="space-y-5">
+                {{-- Galeri --}}
+                <div class="" x-data="{
+                    mainImage: '{{ $eventPlace->firstImage ? asset('storage/' . $eventPlace->firstImage->image) : asset('img/placeholder.webp') }}'
+                }">
 
-                {{-- Gambar Utama --}}
-                <div class="aspect-video rounded-xl overflow-hidden shadow-md mb-4">
-                    <img :src="mainImage" alt="Thumbnail Kuliner"
-                        class="w-full h-full object-cover transition duration-300">
+                    {{-- Gambar Utama --}}
+                    <div class="aspect-video rounded-xl overflow-hidden shadow-md mb-4">
+                        <img :src="mainImage" alt="Thumbnail Kuliner"
+                            class="w-full h-full object-cover transition duration-300">
+                    </div>
+
+                    {{-- Galeri Thumbnail --}}
+                    <div class="flex md:grid md:grid-cols-3 gap-2 overflow-x-auto md:overflow-visible">
+                        @forelse ($eventPlace->images as $image)
+                            <img src="{{ asset('storage/' . $image->image) }}" alt="Galeri Kuliner"
+                                class="w-24 md:w-full h-24 object-cover rounded-md flex-shrink-0 border-2 border-transparent hover:border-[#486284] cursor-pointer transition duration-200"
+                                @click="mainImage = '{{ asset('storage/' . $image->image) }}'">
+                        @empty
+                            @for ($i = 0; $i < 4; $i++)
+                                <img src="{{ asset('img/placeholder.webp') }}" alt="Galeri Kosong"
+                                    class="w-24 md:w-full h-24 object-cover rounded-md flex-shrink-0 border border-gray-300 cursor-not-allowed">
+                            @endfor
+                        @endforelse
+                    </div>
                 </div>
 
-                {{-- Galeri Thumbnail --}}
-                <div class="flex md:grid md:grid-cols-3 gap-2 overflow-x-auto md:overflow-visible">
-                    @forelse ($eventPlace->images as $image)
-                        <img src="{{ asset('storage/' . $image->image) }}" alt="Galeri Kuliner"
-                            class="w-24 md:w-full h-24 object-cover rounded-md flex-shrink-0 border-2 border-transparent hover:border-[#486284] cursor-pointer transition duration-200"
-                            @click="mainImage = '{{ asset('storage/' . $image->image) }}'">
-                    @empty
-                        @for ($i = 0; $i < 4; $i++)
-                            <img src="{{ asset('img/placeholder.webp') }}" alt="Galeri Kosong"
-                                class="w-24 md:w-full h-24 object-cover rounded-md flex-shrink-0 border border-gray-300 cursor-not-allowed">
-                        @endfor
-                    @endforelse
+                {{-- Partisipan Menunggu atau Ditolak --}}
+                <div class="bg-white p-5 rounded-xl shadow-md mt-6">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Partisipan Menunggu & Ditolak</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-[#F4F8FC]">
+                                <tr>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-700">#</th>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-700 whitespace-nowrap">Nama
+                                        Panggung</th>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-700">Telepon</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-700">Status</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-700">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @forelse ($pendingOrRejectedParticipants as $participant)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-2 font-medium">
+                                            {{ $participant->artistProfile->stage_name ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ $participant->artistProfile->phone ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2 text-center">
+                                            @php
+                                                $statusColor = match ($participant->status) {
+                                                    'Menunggu Persetujuan'
+                                                        => 'bg-yellow-200 text-yellow-800 border-yellow-400',
+                                                    'Ditolak' => 'bg-red-200 text-red-800 border-red-400',
+                                                    default => 'bg-gray-200 text-gray-800 border-gray-400',
+                                                };
+                                            @endphp
+                                            <span class="px-2 py-0.5 text-xs rounded-full border {{ $statusColor }}">
+                                                {{ $participant->status }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2 text-center space-x-1 whitespace-nowrap">
+                                            {{-- Lihat Profil --}}
+                                            <a href="{{ route('dashboard.artistprofile.edit', $participant->artistProfile->id) }}"
+                                                class="text-blue-600 text-xs hover:underline">Lihat</a>
+
+                                            {{-- Tolak --}}
+                                            <form
+                                                action="{{ route('dashboard.eventparticipant.updateStatus', $participant->id) }}"
+                                                method="POST" class="inline-block"
+                                                onsubmit="return confirm('Yakin ingin menolak partisipasi ini?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="Ditolak">
+                                                <button type="submit"
+                                                    class="text-red-600 text-xs hover:underline">Tolak</button>
+                                            </form>
+
+                                            {{-- Setujui --}}
+                                            <form
+                                                action="{{ route('dashboard.eventparticipant.updateStatus', $participant->id) }}"
+                                                method="POST" class="inline-block"
+                                                onsubmit="return confirm('Setujui partisipasi ini?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="Diterima">
+                                                <button type="submit"
+                                                    class="text-green-600 text-xs hover:underline">Setujui</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center px-4 py-4 text-gray-500 italic">
+                                            Tidak ada partisipan yang menunggu atau ditolak.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Partisipan Diterima --}}
+                <div class="bg-white p-5 rounded-xl shadow-md mt-4">
+                    <h2 class="text-lg font-semibold text-gray-700 mb-4">Partisipan yang Diterima</h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 text-sm">
+                            <thead class="bg-[#F4F8FC]">
+                                <tr>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-700">#</th>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-700 whitespace-nowrap">Nama
+                                        Panggung</th>
+                                    <th class="px-4 py-2 text-left font-medium text-gray-700">Telepon</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-700">Status</th>
+                                    <th class="px-4 py-2 text-center font-medium text-gray-700">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                @forelse ($acceptedParticipants as $participant)
+                                    <tr class="hover:bg-gray-50">
+                                        <td class="px-4 py-2">{{ $loop->iteration }}</td>
+                                        <td class="px-4 py-2 font-medium">
+                                            {{ $participant->artistProfile->stage_name ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2 whitespace-nowrap">
+                                            {{ $participant->artistProfile->phone ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2 text-center">
+                                            <span
+                                                class="bg-green-200 text-green-800 px-2 py-0.5 text-xs rounded-full border border-green-400">
+                                                {{ $participant->status }}
+                                            </span>
+                                        </td>
+                                        <td class="px-4 py-2 space-x-2 text-center whitespace-nowrap">
+                                            <a href="{{ route('dashboard.artistprofile.edit', $participant->artistProfile->id) }}"
+                                                class="text-blue-600 text-xs hover:underline">Lihat</a>
+
+                                            <form
+                                                action="{{ route('dashboard.eventparticipant.updateStatus', $participant->id) }}"
+                                                method="POST" class="inline-block"
+                                                onsubmit="return confirm('Yakin ingin membatalkan partisipasi ini?')">
+                                                @csrf
+                                                @method('PATCH')
+                                                <input type="hidden" name="status" value="Ditolak">
+                                                <button type="submit"
+                                                    class="text-red-600 text-xs cursor-pointer hover:underline">Batalkan</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center px-4 py-4 text-gray-500 italic">
+                                            Tidak ada partisipan yang diterima.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -117,7 +259,8 @@
                         {{-- Kanan --}}
                         <div class="space-y-3">
                             <div>
-                                <label for="owner_name" class="block text-sm font-medium text-gray-700">Nama Penanggung
+                                <label for="owner_name" class="block text-sm font-medium text-gray-700">Nama
+                                    Penanggung
                                     Jawab</label>
                                 <input id="owner_name" type="text" name="owner_name"
                                     value="{{ old('owner_name', $eventPlace->owner_name) }}"
