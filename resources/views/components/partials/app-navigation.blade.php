@@ -45,8 +45,8 @@
         </a>
 
         {{-- Manajemen Destinasi --}}
-        <a href="#"
-            class="flex items-center space-x-3 px-4 py-2 rounded hover:bg-[#3c516d] {{ Route::is('#') ? 'bg-[#5b7a9f]' : '' }}">
+        <a href="{{ route('dashboard.tourplace.index') }}"
+            class="flex items-center space-x-3 px-4 py-2 rounded hover:bg-[#3c516d] {{ Route::is('dashboard.tourplace.*') ? 'bg-[#5b7a9f]' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-pin-map-fill" viewBox="0 0 16 16">
                 <path fill-rule="evenodd"
@@ -57,8 +57,8 @@
         </a>
 
         {{-- Manajemen Kuliner --}}
-        <a href="#"
-            class="flex items-center space-x-3 px-4 py-2 rounded hover:bg-[#3c516d] {{ Route::is('#') ? 'bg-[#5b7a9f]' : '' }}">
+        <a href="{{ route('dashboard.culinaryplace.index') }}"
+            class="flex items-center space-x-3 px-4 py-2 rounded hover:bg-[#3c516d] {{ Route::is('dashboard.culinaryplace.*') ? 'bg-[#5b7a9f]' : '' }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                 class="bi bi-fork-knife" viewBox="0 0 16 16">
                 <path
