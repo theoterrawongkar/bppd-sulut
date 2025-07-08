@@ -11,7 +11,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class DashboardEventController extends Controller
+class DashboardEventPlaceController extends Controller
 {
     public function index(Request $request)
     {
@@ -214,6 +214,6 @@ class DashboardEventController extends Controller
         // Hapus Event
         $eventPlace->delete();
 
-        return redirect()->route('dashboard.eventplaces.index')->with('success', 'Event berhasil dihapus.');
+        return redirect()->route('dashboard.eventplace.index')->with('success', 'Event berhasil dihapus.');
     }
 }

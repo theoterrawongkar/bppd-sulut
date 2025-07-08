@@ -7,7 +7,7 @@ use App\Models\CulinaryPlace;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
-class DashboardCulinaryController extends Controller
+class DashboardCulinaryPlaceController extends Controller
 {
     public function index(Request $request)
     {
@@ -40,23 +40,28 @@ class DashboardCulinaryController extends Controller
 
     public function edit(string $slug)
     {
-        // Ambil data Kuliner
-        $culinaryPlace = CulinaryPlace::with('user', 'subCategory', 'images', 'operatingHours')
-            ->where('slug', $slug)
-            ->firstOrFail();
+        // Ambil data kuliner beserta relasinya
+        $culinaryPlace = CulinaryPlace::with([
+            'user',
+            'subCategory',
+            'images',
+            'operatingHours',
+        ])->where('slug', $slug)->firstOrFail();
 
-        // Ambil kuliner lain dari user yang sama
+        // Ambil tempat kuliner lain dari user yang sama (kecuali current)
         $otherCulinaryPlaces = CulinaryPlace::where('user_id', $culinaryPlace->user_id)
-            ->where('id', '!=', $culinaryPlace->id)
+            ->whereKeyNot($culinaryPlace->id)
             ->get();
 
-        // Jam Operasional
+        // Format jam operasional per hari
         $operatingHours = $culinaryPlace->operatingHours->keyBy('day');
 
-        // Judul Halaman
-        $title = "Ubah Kuliner";
-
-        return view('dashboard.culinaryplaces.edit', compact('title', 'culinaryPlace', 'otherCulinaryPlaces', 'operatingHours'));
+        return view('dashboard.culinaryplaces.edit', [
+            'title' => 'Ubah Kuliner',
+            'culinaryPlace' => $culinaryPlace,
+            'otherCulinaryPlaces' => $otherCulinaryPlaces,
+            'operatingHours' => $operatingHours,
+        ]);
     }
 
     public function update(Request $request, string $slug)

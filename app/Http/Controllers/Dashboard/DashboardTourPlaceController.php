@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 
-class DashboardTourController extends Controller
+class DashboardTourPlaceController extends Controller
 {
     public function index(Request $request)
     {
@@ -40,23 +40,28 @@ class DashboardTourController extends Controller
 
     public function edit(string $slug)
     {
-        // Ambil data wisata
-        $tourPlace = TourPlace::with('user', 'subCategory', 'images', 'operatingHours')
-            ->where('slug', $slug)
-            ->firstOrFail();
+        // Ambil data wisata beserta relasinya
+        $tourPlace = TourPlace::with([
+            'user',
+            'subCategory',
+            'images',
+            'operatingHours',
+        ])->where('slug', $slug)->firstOrFail();
 
-        // Ambil wisata lain dari user yang sama
+        // Ambil wisata lain milik user yang sama, kecuali yang sedang diedit
         $otherTourPlaces = TourPlace::where('user_id', $tourPlace->user_id)
-            ->where('id', '!=', $tourPlace->id)
+            ->whereKeyNot($tourPlace->id)
             ->get();
 
-        // Jam Operasional
+        // Format jam operasional per hari
         $operatingHours = $tourPlace->operatingHours->keyBy('day');
 
-        // Judul Halaman
-        $title = "Ubah Wisata";
-
-        return view('dashboard.tourplaces.edit', compact('title', 'tourPlace', 'otherTourPlaces', 'operatingHours'));
+        return view('dashboard.tourplaces.edit', [
+            'title' => 'Ubah Wisata',
+            'tourPlace' => $tourPlace,
+            'otherTourPlaces' => $otherTourPlaces,
+            'operatingHours' => $operatingHours,
+        ]);
     }
 
     public function update(Request $request, string $slug)
