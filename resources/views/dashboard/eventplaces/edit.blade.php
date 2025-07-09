@@ -59,7 +59,7 @@
                                         <td class="px-4 py-2 whitespace-nowrap">
                                             {{ $participant->artistProfile->phone ?? '-' }}
                                         </td>
-                                        <td class="px-4 py-2 text-center">
+                                        <td class="px-4 py-2 text-center whitespace-nowrap">
                                             @php
                                                 $statusColor = match ($participant->status) {
                                                     'Menunggu Persetujuan'
